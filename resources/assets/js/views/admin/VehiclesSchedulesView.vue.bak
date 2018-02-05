@@ -1,0 +1,260 @@
+<template>
+	<v-container>
+		<v-layout row wrap> 
+			<v-flex xs11 sm5>
+				<v-menu
+				lazy
+				:close-on-content-click="false"
+				v-model="monthPickMenu"
+				transition="scale-transition"
+				offset-y
+				full-width
+				:nudge-right="40"
+				max-width="290px"
+				min-width="290px"
+				>
+				<v-text-field
+				slot="activator"
+				label="Picker in menu"
+				v-model="checkDate"
+				prepend-icon="event"
+				readonly
+				></v-text-field>
+				<v-date-picker type="month" v-model="checkDate" no-title scrollable actions>
+					<template slot-scope="{ save, cancel }">
+						<v-card-actions>
+							<v-spacer></v-spacer>
+							<v-btn flat color="primary" @click="cancel">Cancel</v-btn>
+							<v-btn flat color="primary" @click="save">OK</v-btn>
+						</v-card-actions>
+					</template>
+				</v-date-picker>
+			</v-menu>
+		</v-flex>
+		<v-flex>  
+			<table class="my-table" >
+				<thead>
+					<tr><th width="80px">Vehicles</th><th v-for="item in getHeaderDays">{{ item.date}} {{ item.dow }}</th></tr>
+				</thead>
+				<tbody>
+					<tr v-for="item in getTdItems">
+						<td>{{ item.name.slice(-4) }}</td>
+						<td v-for="(day, index) in item.daysMap" :class="day.class"> 
+							<a 
+							v-if="checkIndex(index, item.infoMap.startIndex)" 
+							:class="getClass(index, item.infoMap)" >
+							<p v-if="show">Top</p>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</v-flex>
+</v-layout>
+</v-container>
+</template>
+
+<script>
+import moment from "moment";
+export default {
+	name: "vehicles-schedules-view",
+
+	data() {
+		return {
+            monthPickMenu: false,
+            checkDate : moment().format("YYYY-MM"),
+						chooseDate: '',
+            headers: [],
+            vehicles: [],
+            show: false,
+		}
+	},
+	created() {
+            this.getVehiclesWithRangeSchedule();
+        
+    },
+
+  watch: {
+  
+      checkDate: function (newDate, oldDate) {
+        this.getVehiclesWithRangeSchedule();
+      }
+  },
+  methods: {
+  	getVehiclesWithRangeSchedule(){
+            axios.get('/vehicles/range-schedules', {
+              params: {
+                start_at: this.startOfM.format("YYYY-MM-DD"),
+                end_at: this.endOfM.format("YYYY-MM-DD")
+              }
+            })
+            .then(response => { 
+                this.vehicles = response.data
+            }); 
+    },
+    buildArray(target, start, end){
+      	for(var i=start; i<=end; i++) {
+      		target.push(i);
+      	}
+    },
+
+    checkIndex(index, arr) {
+        return arr.includes(index+1);
+    },
+
+    getClass(index, infoMap ) {
+      let rangeIndex = infoMap.startIndex.indexOf(index + 1);
+      return "w-" + infoMap.range[rangeIndex];
+    }
+
+
+  },
+  computed: {
+    startOfM() {
+        return moment(this.checkDate).startOf('month');
+    },
+
+    endOfM(){
+        return moment(this.checkDate).endOf('month');          
+    },
+
+	getHeaderDays(){
+		let y = moment(this.checkDate).year();
+		let m = moment(this.checkDate).month();
+		let daysInM = moment(this.checkDate).daysInMonth();
+		let days = [];
+		for (var i = 1; i <= daysInM; i++) {
+				days.push({
+					dow: moment({year: y, month: m, date: i}).format('ddd'),
+					date: i
+				});
+		}
+
+		this.headers = days;
+		return this.headers;
+  },
+
+  getTdItems(){
+  	let daysInM = moment(this.checkDate).daysInMonth();
+  	let startOfM = moment(this.checkDate).startOf('month');
+  	let endOfM = moment(this.checkDate).endOf('month');
+		let comp = this;
+		let newItems = this.vehicles;
+
+		newItems.forEach( function(item, index) {
+			let daysTaken = [];
+                let infoMap = { startIndex : [], range : []};
+                let schedulesMap = {
+                    'type' : null,
+                    'daysTaken' : [],
+                    'daysMap' : {
+                        'startIndex' : [],
+                        'range' : []
+                    },
+                };
+
+			item.vehicle_schedules.forEach( function(schedule, index) {
+			    let startOfS = moment(schedule.start_at);
+                    let   endOfS = moment(schedule.end_at);
+                    let    o = {};
+
+                    if ( startOfS.isBefore(startOfM) && endOfS.isAfter(endOfM) ) {
+                        comp.buildArray(daysTaken, startOfM.date(), endOfM.date()); 
+                        infoMap.startIndex.push(1);
+                        infoMap.range.push(endOfM.date());
+                        return;
+                    } 
+                    if ( startOfS.isBefore(startOfM) ) {
+                        comp.buildArray(daysTaken, startOfM.date(), endOfS.date()); 
+                        infoMap.startIndex.push(1);
+                        infoMap.range.push(endOfS.date());
+                        return;
+                    } 
+                    if ( endOfM.isBefore(endOfS)) {
+                        comp.buildArray(daysTaken, startOfS.date(), endOfM.date());   
+                        infoMap.startIndex.push(startOfS.date());
+                        infoMap.range.push(endOfM.date() - startOfS.date() + 1);
+                        return;
+                    } 
+                        comp.buildArray(daysTaken, startOfS.date(), endOfS.date()); 
+                        infoMap.startIndex.push(startOfS.date());
+                        infoMap.range.push(endOfS.date() - startOfS.date() + 1);
+			});
+
+			let tdItems = [];
+			
+			for (var i = 1; i <= daysInM; i++) {
+				tdItems.push({
+					day: i
+				});
+			}
+
+			tdItems.forEach( function(item, index) {
+			if(daysTaken.includes(item.day)) {
+				item.class="active";
+			}	else {
+				item.class="inactive";
+			}
+			});
+			newItems[index].daysMap = tdItems;
+      newItems[index].infoMap = infoMap;
+		});
+
+	
+		return newItems;
+  }
+} 
+}
+</script>
+<style lang="scss">
+.my-table{
+	border-spacing: 0;
+
+	tr:hover{
+		background-color:#bbb;
+	}	
+	th, td{
+		padding:5px;
+		border-bottom:1px solid #efefef;
+        position: relative;
+        
+        a {
+            position:absolute;
+            display: block;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+	}
+
+
+	tr:nth-child(2n+1) td.active{
+		background-color: #FFC107;
+	}
+	tr:nth-child(3n+1) td.active{
+		background-color: #2196F3;
+	}
+
+	tr td.active{
+		background-color: #FF5252;
+
+        
+	}
+
+    td.active:hover{
+            cursor: pointer;
+    };
+
+    @for $i from 1 through 31 {
+    .w-#{$i} { width: 100% * $i; }
+}
+}
+.my-calender{
+	table.table tbody td, table.table tbody th{
+		height:12px;
+	}
+	table.table tbody td:first-child, table.table tbody td:not(:first-child), table.table tbody th:first-child, table.table tbody th:not(:first-child), table.table thead td:first-child, table.table thead td:not(:first-child), table.table thead th:first-child, table.table thead th:not(:first-child){
+		padding: 0px 10px;
+	}
+}
+</style>

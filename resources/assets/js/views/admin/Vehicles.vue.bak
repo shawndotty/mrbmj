@@ -1,0 +1,369 @@
+<template>
+     <v-layout row justify-center>
+	<v-flex>
+    <v-toolbar>
+        
+        <v-toolbar-title>Vehicles</v-toolbar-title>
+        <v-spacer></v-spacer>
+       
+        <v-btn icon @click.native.stop="toggleView" :disabled="!scheduleView" >
+          <v-icon>reorder</v-icon>
+        </v-btn>
+        <v-btn icon @click.native.stop="toggleView" :disabled="scheduleView" >
+          <v-icon >line_style</v-icon>
+        </v-btn>
+        <v-btn color="primary" dark @click.native.stop="dialog = true">Add New Vehicle</v-btn>
+    </v-toolbar>
+    <v-container v-if="scheduleView">
+        <v-layout row wrap>
+            
+            <v-flex xs11 sm5>
+      <v-menu
+        lazy
+        :close-on-content-click="false"
+        v-model="monthPickMenu"
+        transition="scale-transition"
+        offset-y
+        full-width
+        :nudge-right="40"
+        max-width="290px"
+        min-width="290px"
+      >
+        <v-text-field
+          slot="activator"
+          label="Picker in menu"
+          v-model="checkDate"
+          prepend-icon="event"
+          readonly
+        ></v-text-field>
+        <v-date-picker type="month" v-model="checkDate" no-title scrollable actions>
+          <template slot-scope="{ save, cancel }">
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
+              <v-btn flat color="primary" @click="save">OK</v-btn>
+            </v-card-actions>
+          </template>
+        </v-date-picker>
+      </v-menu>
+    </v-flex>
+         <v-flex>  
+          	<table class="my-table" >
+          		<thead>
+          			<tr><th width="80px">Vehicles</th><th v-for="item in getHeaderDays">{{ item.date}} {{ item.dow }}</th></tr>
+          		</thead>
+          		<tbody>
+          			<tr v-for="item in getTdItems">
+          				<td>{{ item.name.slice(-4) }}</td>
+        				<td v-for="(day, index) in item.daysMap" :class="day.class" v-on:mouseover="handleHover" > 
+                                <a 
+                                v-if="checkIndex(index, item.infoMap.startIndex)" 
+                                :class="getClass(index, item.infoMap)" 
+                                @click="handleClick">
+                                          <p v-if="show">Top</p>
+                                </a>
+                        </td>
+          			</tr>
+          		</tbody>
+          	</table>
+            
+          </v-flex>
+        </v-layout>
+    </v-container>
+    <v-container v-if="!scheduleView">
+        <v-layout>
+            <v-flex>
+                <v-data-table
+                  v-bind:headers="listHeaders"
+                  :items="vehicles"
+                  hide-actions
+                  class="elevation-1"
+                >
+                <template slot="items" slot-scope="props">
+                  <td>{{ props.item.name }}</td>
+                  <td class="text-xs-right">{{ props.item.vehicle_type }}</td>
+                  <td class="text-xs-right">{{ getActiveSchedules(props.item.vehicle_schedules).length }}</td>
+                  <td class="text-xs-right">{{ getCurrentSchedule(props.item.vehicle_schedules) }}</td>
+                </template>
+                </v-data-table>
+            </v-flex>
+        </v-layout>
+    </v-container>
+
+    <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition" :overlay=false>
+      <v-card>
+        <dialog-toolbar title="Add New Vehicle" v-on:closeDialog="dialog = false"></dialog-toolbar> 
+        <form-new-vehicle></form-new-vehicle>
+      </v-card>
+    </v-dialog> 
+</v-flex>	
+</v-layout>
+</template>
+<script>
+import moment from "moment";
+import FormNewVehicle from "./FormNewVehicle.vue";
+import DialogToolbar from "./partials/DialogToolbar.vue";
+export default {
+    components: {
+        FormNewVehicle, DialogToolbar           
+    },
+	data() {
+		return {
+            dialog: false,
+            monthPickMenu: false,
+            checkDate : moment().format("YYYY-MM"),
+            scheduleView: true,
+			chooseDate: '',
+            headers: [],
+            vehicles: [],
+			listHeaders: [
+              {
+                text: 'Vehicle Code',
+                align: 'left',
+                sortable: false,
+                value: 'name'
+              },
+              { text: 'Vehicle Type', value: 'vehicle_type' },
+              { text: 'Active Schedules', value: 'vehicle_schedules' },
+              { text: 'On Duty Today', value: 'on_duty_tody' }
+            ],
+            show: false,
+		}
+	},
+
+	created() {
+            this.getVehiclesWithRangeSchedule();
+        
+    },
+
+    watch: {
+    
+        checkDate: function (newDate, oldDate) {
+          this.getVehiclesWithRangeSchedule();
+        }
+    },
+
+    methods: {
+
+        getVehiclesWithRangeSchedule(){
+            axios.get('/vehicles/range-schedules', {
+              params: {
+                start_at: this.startOfM.format("YYYY-MM-DD"),
+                end_at: this.endOfM.format("YYYY-MM-DD")
+              }
+            })
+            .then(response => { 
+                this.vehicles = response.data
+            }); 
+        },
+
+        getActiveSchedules($schedules){
+            let activeSchedules = [];
+            if (!$schedules.length) {
+                return activeSchedules; 
+            } else {
+                $schedules.forEach(function(item, index){
+                    if(moment(item.end_at).isAfter(moment())){
+                        activeSchedules.push(item);
+                    }
+                })
+                return activeSchedules;
+            }
+        },
+        getCurrentSchedule($schedules){
+            let activeSchedules = this.getActiveSchedules($schedules);
+            let workingToday = 'No';
+            if (activeSchedules.length) {
+                
+                activeSchedules.forEach(function(item, index){
+                    if (moment().isAfter(moment(item.start_at))) {
+                        workingToday = 'Yes';
+                    }
+                })
+                return workingToday;
+            } else {
+                return workingToday;
+            }
+        },
+        toggleView(){
+            this.scheduleView = !this.scheduleView;
+            
+        },
+          buildArray(target, start, end){
+          	for(var i=start; i<=end; i++) {
+          		target.push(i);
+          	}
+          },
+
+      handleHover(event) {
+        this.show = true;
+      },
+
+      handleClick() {
+        console.log('You clicked me.');
+      },
+
+      checkIndex(index, arr) {
+        return arr.includes(index+1);
+      },
+
+      getClass(index, infoMap ) {
+        let rangeIndex = infoMap.startIndex.indexOf(index + 1);
+        return "w-" + infoMap.range[rangeIndex];
+      }
+    },
+
+    computed: {
+        startOfM() {
+            return moment(this.checkDate).startOf('month');
+        },
+
+        endOfM(){
+            return moment(this.checkDate).endOf('month');          
+        },
+
+    	getHeaderDays(){
+    		let y = moment(this.checkDate).year();
+				let m = moment(this.checkDate).month();
+				let daysInM = moment(this.checkDate).daysInMonth();
+				let days = [];
+				for (var i = 1; i <= daysInM; i++) {
+						days.push({
+							dow: moment({year: y, month: m, date: i}).format('ddd'),
+							date: i
+						});
+				}
+
+				this.headers = days;
+				return this.headers;
+	    },
+
+	    getTdItems(){
+	    	let daysInM = moment(this.checkDate).daysInMonth();
+	    	let startOfM = moment(this.checkDate).startOf('month');
+	    	let endOfM = moment(this.checkDate).endOf('month');
+				let comp = this;
+				let newItems = this.vehicles;
+
+				newItems.forEach( function(item, index) {
+					let daysTaken = [];
+                    let infoMap = { startIndex : [], range : []};
+                    let schedulesMap = {
+                        'type' : null,
+                        'daysTaken' : [],
+                        'daysMap' : {
+                            'startIndex' : [],
+                            'range' : []
+                        },
+                    };
+
+					item.vehicle_schedules.forEach( function(schedule, index) {
+					    let startOfS = moment(schedule.start_at);
+                        let   endOfS = moment(schedule.end_at);
+                        let    o = {};
+
+                        if ( startOfS.isBefore(startOfM) && endOfS.isAfter(endOfM) ) {
+                            comp.buildArray(daysTaken, startOfM.date(), endOfM.date()); 
+                            infoMap.startIndex.push(1);
+                            infoMap.range.push(endOfM.date());
+                            return;
+                        } 
+                        if ( startOfS.isBefore(startOfM) ) {
+                            comp.buildArray(daysTaken, startOfM.date(), endOfS.date()); 
+                            infoMap.startIndex.push(1);
+                            infoMap.range.push(endOfS.date());
+                            return;
+                        } 
+                        if ( endOfM.isBefore(endOfS)) {
+                            comp.buildArray(daysTaken, startOfS.date(), endOfM.date());   
+                            infoMap.startIndex.push(startOfS.date());
+                            infoMap.range.push(endOfM.date() - startOfS.date() + 1);
+                            return;
+                        } 
+                            comp.buildArray(daysTaken, startOfS.date(), endOfS.date()); 
+                            infoMap.startIndex.push(startOfS.date());
+                            infoMap.range.push(endOfS.date() - startOfS.date() + 1);
+					});
+
+					let tdItems = [];
+					
+					for (var i = 1; i <= daysInM; i++) {
+						tdItems.push({
+							day: i
+						});
+					}
+
+					tdItems.forEach( function(item, index) {
+					if(daysTaken.includes(item.day)) {
+						item.class="active";
+					}	else {
+						item.class="inactive";
+					}
+					});
+
+                    console.log(daysTaken);
+
+					newItems[index].daysMap = tdItems;
+                    newItems[index].infoMap = infoMap;
+				});
+
+			
+				return newItems;
+	    }
+    }
+
+	}		
+</script>
+
+<style lang="scss">
+.my-table{
+	border-spacing: 0;
+
+	tr:hover{
+		background-color:#bbb;
+	}	
+	th, td{
+		padding:5px;
+		border-bottom:1px solid #efefef;
+        position: relative;
+        
+        a {
+            position:absolute;
+            display: block;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+	}
+
+
+	tr:nth-child(2n+1) td.active{
+		background-color: #FFC107;
+	}
+	tr:nth-child(3n+1) td.active{
+		background-color: #2196F3;
+	}
+
+	tr td.active{
+		background-color: #FF5252;
+
+        
+	}
+
+    td.active:hover{
+            cursor: pointer;
+    };
+
+    @for $i from 1 through 31 {
+    .w-#{$i} { width: 100% * $i; }
+}
+}
+.my-calender{
+	table.table tbody td, table.table tbody th{
+		height:12px;
+	}
+	table.table tbody td:first-child, table.table tbody td:not(:first-child), table.table tbody th:first-child, table.table tbody th:not(:first-child), table.table thead td:first-child, table.table thead td:not(:first-child), table.table thead th:first-child, table.table thead th:not(:first-child){
+		padding: 0px 10px;
+	}
+}
+</style>
