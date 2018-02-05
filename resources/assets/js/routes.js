@@ -55,10 +55,6 @@ let routes = [
 		component: require('./views/admin/Vehicles')
 	},
 	{
-		path: '/vehicles/new',
-		component: require('./views/admin/vehiclesNew')
-	},
-	{
 		path: '/vehicle/:vehicleId',
     name: 'vehicle',
     component: require('./views/admin/Vehicle')
