@@ -49451,18 +49451,12 @@ var routes = [{ path: '/', redirect: '/orders' }, {
 	path: '/drivers',
 	component: __webpack_require__(213)
 }, {
-	path: '/drivers/new',
-	component: __webpack_require__(223)
-}, {
 	path: '/driver/:driverId',
 	name: 'driver',
 	component: __webpack_require__(224)
 }, {
 	path: '/guides',
 	component: __webpack_require__(225)
-}, {
-	path: '/guides/new',
-	component: __webpack_require__(231)
 }, {
 	path: '/guide/:guideId',
 	name: 'guide',
@@ -56098,36 +56092,7 @@ if (false) {
 }
 
 /***/ }),
-/* 223 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = null
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/views/admin/DriversNew.vue"
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 223 */,
 /* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -56548,36 +56513,7 @@ if (false) {
 }
 
 /***/ }),
-/* 231 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = null
-/* template */
-var __vue_template__ = null
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/views/admin/guidesNew.vue"
-
-module.exports = Component.exports
-
-
-/***/ }),
+/* 231 */,
 /* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 

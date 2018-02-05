@@ -37,10 +37,6 @@ let routes = [
 		component: require('./views/admin/Drivers')
 	},
 	{
-		path: '/drivers/new',
-		component: require('./views/admin/DriversNew')
-	},
-	{
 		path: '/driver/:driverId',
     name: 'driver',
     component: require('./views/admin/Driver')
@@ -48,10 +44,6 @@ let routes = [
 	{
 		path: '/guides',
 		component: require('./views/admin/Guides')
-	},
-	{
-		path: '/guides/new',
-		component: require('./views/admin/guidesNew')
 	},
 	{
 		path: '/guide/:guideId',
