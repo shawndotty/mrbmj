@@ -1,77 +1,85 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Register</div>
-
-                <div class="panel-body">
+<v-container fluid fill-height>
+            <v-layout row wrap align-center justify-center>
+                <v-flex md4 xs10>
+                    <v-card>
+                        <v-toolbar dark color="primary">
+                            <v-toolbar-title>Register</v-toolbar-title>
+                            <v-spacer></v-spacer>
+                        </v-toolbar>
                     <form class="form-horizontal" method="POST" action="{{ route('register') }}">
                         {{ csrf_field() }}
 
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Name</label>
+                        <v-card-text>
+                        <v-text-field
+                            label="Name"
+                            type="text"
+                            placeholder=""
+                            value="{{ old('name') }}"
+                            name="email"
+                            required
+                           
+                            ref="name"
+                        ></v-text-field>
+                        @if ($errors->has('name'))
+                            <span class="help-block">
+                                <strong>{{ $errors->first('name') }}</strong>
+                            </span>
+                        @endif
 
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autofocus>
-
-                                @if ($errors->has('name'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
+                        <v-text-field
+                            label="Email"
+                            id="email"
+                            type="email"
+                            name="email"
+                            value="{{ old('email') }}"
+                            required>
+                        </v-text-field>
+                        @if ($errors->has('email'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
-                                @endif
-                            </div>
-                        </div>
+                        @endif
 
-                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
-
-                                @if ($errors->has('password'))
+                        <v-text-field 
+                            label="Password"
+                            id="password"
+                            type="password"
+                            name="password"
+                            required
+                            >
+                        </v-text-field>
+                         @if ($errors->has('password'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('password') }}</strong>
                                     </span>
                                 @endif
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
+                        <v-text-field
+                            label="Confirm Password"
+                            id="password-confirm"
+                            type="password"
+                            name="password_confirmation"
+                            required
+                            >
+                        </v-text-field>
 
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Register
-                                </button>
-                            </div>
-                        </div>
+                        </v-card-text> 
+                        <v-card-actions>
+                          
+                            <v-btn 
+                                color="primary"
+                                type="submit"
+                            >
+                            Register
+                            </v-btn>
+                        </v-card-actions>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
+                </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
 </div>
 @endsection

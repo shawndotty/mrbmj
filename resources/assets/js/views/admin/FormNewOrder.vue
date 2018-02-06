@@ -2,178 +2,206 @@
 <v-container>
   <v-layout row justify-center>
     <v-flex xs12 sm12 md10>
-      <v-card>
-        <v-card-title>
-          Add New Order
-        </v-card-title>
-        <v-card-text>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-container grid-list-md>
-              <v-layout row wrap>
-                <v-flex xs11 sm6>
-                  <v-select
-                    v-bind:items="clientsNamesAndIds"
-                    item-text="name"
-                    item-value="id"
-                    v-model="client"
-                    return-object
-                    label="Client Name"
-                    required
-                    bottom
-                  ></v-select>
-                </v-flex>
-                          <v-flex xs11 sm6>
-                            <v-select
-                            v-bind:items="vehicleTypes"
+      <v-form v-model="valid" ref="form" lazy-validation>
+      <v-tabs fixed>
+          <v-tabs-bar class="primary" dark>
+            
+            <v-tabs-item href="#basic">
+              Basic
+            </v-tabs-item>
+             <v-tabs-item href="#additional">
+              Additional
+            </v-tabs-item>
+            <v-tabs-slider class="white"></v-tabs-slider>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content id="basic">
+              <v-card flat>
+                <v-card-text>
+                  <v-container grid-list-md>
+                      <v-layout row wrap>
+                        <v-flex xs11 sm6>
+                          <v-select
+                            v-bind:items="clientsNamesAndIds"
                             item-text="name"
                             item-value="id"
-                            v-model="vehicleType"
+                            v-model="client"
                             return-object
-                            label="Vehicle Type"
+                            label="Client Name"
+                            required
                             bottom
-                            ></v-select>
+                          ></v-select>
+                        </v-flex>
+                            <v-flex xs11 sm6>
+                              <v-select
+                              v-bind:items="vehicleTypes"
+                              item-text="name"
+                              item-value="id"
+                              v-model="vehicleType"
+                              return-object
+                              label="Vehicle Type"
+                              bottom
+                              ></v-select>
+                            </v-flex>
+                            <v-flex xs11 sm6 md4>
+                              <v-menu
+                              lazy
+                              :close-on-content-click="false"
+                              v-model="menu.pickupDate"
+                              transition="scale-transition"
+                              offset-y
+                              full-width
+                              :nudge-right="40"
+                              max-width="290px"
+                              min-width="290px">
+                              <v-text-field
+                              slot="activator"
+                              label="Pickup Date"
+                              v-model="pickupDate"
+                              prepend-icon="event"
+                              readonly
+                              ></v-text-field>
+                              <v-date-picker v-model="pickupDate" no-title scrollable actions :allowed-dates="allowedDates">
+                                <template slot-scope="{ save, cancel }">
+                                  <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
+                                    <v-btn flat color="primary" @click="save">OK</v-btn>
+                                  </v-card-actions>
+                                </template>
+                              </v-date-picker>
+                            </v-menu>
                           </v-flex>
                           <v-flex xs11 sm6 md4>
                             <v-menu
                             lazy
                             :close-on-content-click="false"
-                            v-model="menu.pickupDate"
+                            v-model="menu.pickupTime"
                             transition="scale-transition"
                             offset-y
                             full-width
                             :nudge-right="40"
                             max-width="290px"
-                            min-width="290px">
+                            min-width="290px"
+                            >
                             <v-text-field
                             slot="activator"
-                            label="Pickup Date"
-                            v-model="pickupDate"
-                            prepend-icon="event"
+                            label="Pickup Time"
+                            v-model="pickupTime"
+                            prepend-icon="access_time"
+
                             readonly
                             ></v-text-field>
-                            <v-date-picker v-model="pickupDate" no-title scrollable actions :allowed-dates="allowedDates">
-                              <template slot-scope="{ save, cancel }">
-                                <v-card-actions>
-                                  <v-spacer></v-spacer>
-                                  <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
-                                  <v-btn flat color="primary" @click="save">OK</v-btn>
-                                </v-card-actions>
-                              </template>
-                            </v-date-picker>
+                            <v-time-picker v-model="pickupTime" autosave :allowed-minutes="allowedTime.minutes"></v-time-picker>
                           </v-menu>
+                        </v-flex>
+                        <v-flex xs11 sm6 md4>
+                          <v-select
+                          v-bind:items="cities"
+                          item-text="name"
+                          item-value="id"
+                          prepend-icon="map"
+                          v-model="pickupCity"
+                          return-object
+                          label="Pickup City"
+                          bottom
+                          ></v-select>
                         </v-flex>
                         <v-flex xs11 sm6 md4>
                           <v-menu
                           lazy
                           :close-on-content-click="false"
-                          v-model="menu.pickupTime"
+                          v-model="menu.dropoffDate"
                           transition="scale-transition"
                           offset-y
                           full-width
                           :nudge-right="40"
                           max-width="290px"
-                          min-width="290px"
-                          >
+                          min-width="290px">
                           <v-text-field
                           slot="activator"
-                          label="Pickup Time"
-                          v-model="pickupTime"
-                          prepend-icon="access_time"
-
+                          label="Dropoff Date"
+                          v-model="dropoffDate"
+                          prepend-icon="event"
                           readonly
                           ></v-text-field>
-                          <v-time-picker v-model="pickupTime" autosave :allowed-minutes="allowedTime.minutes"></v-time-picker>
+                          <v-date-picker v-model="dropoffDate" no-title scrollable actions :allowed-dates="allowedDropoffDates">
+                            <template slot-scope="{ save, cancel }">
+                              <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
+                                <v-btn flat color="primary" @click="save">OK</v-btn>
+                              </v-card-actions>
+                            </template>
+                          </v-date-picker>
                         </v-menu>
-                      </v-flex>
-                      <v-flex xs11 sm6 md4>
-                        <v-select
-                        v-bind:items="cities"
-                        item-text="name"
-                        item-value="id"
-                        prepend-icon="map"
-                        v-model="pickupCity"
-                        return-object
-                        label="Pickup City"
-                        bottom
-                        ></v-select>
                       </v-flex>
                       <v-flex xs11 sm6 md4>
                         <v-menu
                         lazy
                         :close-on-content-click="false"
-                        v-model="menu.dropoffDate"
+                        v-model="menu.dropoffTime"
                         transition="scale-transition"
                         offset-y
                         full-width
                         :nudge-right="40"
                         max-width="290px"
-                        min-width="290px">
+                        min-width="290px"
+                        >
                         <v-text-field
                         slot="activator"
-                        label="Dropoff Date"
-                        v-model="dropoffDate"
-                        prepend-icon="event"
+                        label="Dropoff Time"
+                        v-model="dropoffTime"
+                        prepend-icon="access_time"
+
                         readonly
                         ></v-text-field>
-                        <v-date-picker v-model="dropoffDate" no-title scrollable actions :allowed-dates="allowedDropoffDates">
-                          <template slot-scope="{ save, cancel }">
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
-                              <v-btn flat color="primary" @click="save">OK</v-btn>
-                            </v-card-actions>
-                          </template>
-                        </v-date-picker>
+                        <v-time-picker v-model="dropoffTime" autosave :allowed-minutes="allowedTime.minutes"></v-time-picker>
                       </v-menu>
                     </v-flex>
                     <v-flex xs11 sm6 md4>
-                      <v-menu
-                      lazy
-                      :close-on-content-click="false"
-                      v-model="menu.dropoffTime"
-                      transition="scale-transition"
-                      offset-y
-                      full-width
-                      :nudge-right="40"
-                      max-width="290px"
-                      min-width="290px"
-                      >
-                      <v-text-field
-                      slot="activator"
-                      label="Dropoff Time"
-                      v-model="dropoffTime"
-                      prepend-icon="access_time"
+                      <v-select
+                      v-bind:items="cities"
+                      item-text="name"
+                      item-value="id"
+                      prepend-icon="map"
+                      v-model="dropoffCity"
+                      return-object
+                      label="Dropoff City"
+                      bottom
+                      ></v-select>
+                    </v-flex>
 
-                      readonly
-                      ></v-text-field>
-                      <v-time-picker v-model="dropoffTime" autosave :allowed-minutes="allowedTime.minutes"></v-time-picker>
-                    </v-menu>
-                  </v-flex>
-                  <v-flex xs11 sm6 md4>
-                    <v-select
-                    v-bind:items="cities"
-                    item-text="name"
-                    item-value="id"
-                    prepend-icon="map"
-                    v-model="dropoffCity"
-                    return-object
-                    label="Dropoff City"
-                    bottom
-                    ></v-select>
-                  </v-flex>
+                    
+                      </v-layout>
+                  </v-container>
 
-                  <v-flex xs11 sm6 md4>
-                    <v-btn
-                    @click="submit"
-                    :disabled="!valid"
-                    >
-                    submit
-                  </v-btn>
-                  <v-btn @click="clear">clear</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-form>
+                </v-card-text>
+              </v-card>
+            </v-tabs-content>
+            <v-tabs-content id="additional">
+              <v-card>
+                <v-card-text>
+                  Just for test.
+                </v-card-text>
+              </v-card>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
+      <v-flex xs11 sm6 md4>
+                <v-btn
+                  @click="submit"
+                  :disabled="!valid"
+                >
+                  submit
+                          </v-btn>
+                          <v-btn @click="clear">clear</v-btn>
+                        </v-flex>
+      </v-form>
+        
+          
+            
+          
           <v-snackbar
                   :timeout="toast.timeout"
                   :color="toast.color"
@@ -184,8 +212,7 @@
                   {{ toast.text }}
                   <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
                 </v-snackbar>
-        </v-card-text>
-      </v-card>
+        
     </v-flex>
   </v-layout>
 </v-container>      
