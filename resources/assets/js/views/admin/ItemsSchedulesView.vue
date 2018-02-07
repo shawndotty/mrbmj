@@ -69,7 +69,7 @@
 					<tbody>
 						<template v-if="scheduleView == 'collapse'">
 							<tr v-for="item in getTdItems">
-							<td class="text-xs-center">{{ item.name.slice(-4) }}</td>
+							<td class="text-xs-center">{{ item.first_name ? item.first_name : item.name.slice(-4) }}</td>
 							<td v-for="(day, index) in item.daysMap" :class="day.class.join(' ')" :title="day.ids.join(' ')">
 							</td>
 						</tr>
@@ -80,7 +80,7 @@
 								<td class="text-xs-center name" 
 								v-if="item[itemSchedules].length && index == 0" 
 								:rowspan="item[itemSchedules].length">
-								{{ item.name.slice(-4) }}
+								{{ item.first_name ? item.first_name : item.name.slice(-4) }}
 								</td>
 								<td 
 								v-for="(day, index) in schedule.daysMap"

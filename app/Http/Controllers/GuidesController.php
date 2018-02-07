@@ -71,6 +71,15 @@ class GuidesController extends Controller
     public function store(Request $request)
     {
         //
+
+        $guide = new Guide();
+        $guide->first_name = $request->first_name;
+        $guide->last_name = $request->last_name;
+        $guide->email = $request->email;
+        $guide->phone = $request->phone;
+        $guide->save();
+        //
+        return $guide;
     }
 
     /**

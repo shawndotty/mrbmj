@@ -15,14 +15,24 @@ use Faker\Generator as Faker;
 
 $factory->define(App\Order::class, function (Faker $faker) {
     return [
-        'name' => $faker->numerify('Order ####'),
         'client_id' => function() {
         	return App\Client::inRandomOrder()->first()->id;
         },
-        'vehicle_type' => $faker->numberBetween($min = 1, $max = 8),
+        'type' => $faker->numberBetween($min = 1, $max = 2),
+        'pax' => $faker->numberBetween($min = 1, $max = 100),
+        'group_type' => $faker->randomElement($array = array (
+            'Military/Government', 
+            'Club', 
+            'Corporate',
+            'Education/Academic',
+            'Family',
+            'Religious',
+            'Sports',
+            'Youth',
+            'Other' )),
         'pickup_at' => $faker->dateTimeBetween($startDate = '+10 days', $endDate = '+15 days', $timezone = null),
         'dropoff_at' => $faker->dateTimeBetween($startDate = '+20 days', $endDate = '+40 days', $timezone = null),
-        'pickup_location_id' => $faker->numberBetween($min = 1, $max = 1000),
-        'dropoff_location_id' => $faker->numberBetween($min = 1, $max = 1000)
+        'pickup_location' => $faker->city(),
+        'dropoff_location' => $faker->city(),
     ];
 });

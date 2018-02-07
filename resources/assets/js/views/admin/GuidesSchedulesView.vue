@@ -96,7 +96,7 @@
 					<tbody>
 						<template v-if="scheduleView == 'collapse'">
 							<tr v-for="item in getTdItems">
-							<td class="text-xs-center">{{ item.name.slice(-4) }}</td>
+							<td class="text-xs-center">{{ item.first_name }}</td>
 							<td v-for="(day, index) in item.daysMap" :class="day.class.join(' ')" :title="day.ids.join(' ')">
 							</td>
 						</tr>
@@ -105,7 +105,7 @@
 						<template v-if="scheduleView == 'expand'" v-for="item in getTdItems">
 							<tr class="expand-view" v-for="(schedule, index) in item.guide_schedules">
 								<td class="text-xs-center name" v-if="item.guide_schedules.length && index == 0" :rowspan="item.guide_schedules.length">
-								{{ item.name.slice(-4) }}
+								{{ item.first_name }}
 								</td>
 								<td 
 								v-for="(day, index) in schedule.daysMap"

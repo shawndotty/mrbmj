@@ -15,13 +15,16 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
             $table->integer('client_id');
-            $table->integer('vehicle_type');
+            $table->integer('type');
+            $table->integer('pax');
+            $table->string('group_type');
             $table->datetime('pickup_at');
             $table->datetime('dropoff_at');
-            $table->integer('pickup_location_id');
-            $table->integer('dropoff_location_id');
+            $table->string('pickup_location');
+            $table->string('dropoff_location');
+            $table->json('vehicle_option')->nullable()->default(NULL);
+            $table->longtext('itinerary')->nullable()->default(NULL);
             $table->timestamps();
         });
     }

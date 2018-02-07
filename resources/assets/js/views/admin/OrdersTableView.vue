@@ -8,21 +8,16 @@
 					      class="elevation-1"
 					        >
 					        <template slot="items" slot-scope="props">
-					          <td>{{ props.item.id }}</td>
-					          <td class="text-xs-left">
-					            <router-link :to="{ name: 'order', params: { orderId: props.item.id }}">
-					            {{ props.item.name }}
-					            </router-link>
-					          </td>
+					          <td> <router-link :to="{ name: 'order', params: { orderId: props.item.id }}">{{ props.item.id }}</router-link></td>
 					          <td class="text-xs-right">
 					            <router-link :to="{ name: 'client', params: { clientId: props.item.client_id }}">
 					            {{ props.item.client.first_name }} {{ props.item.client.last_name }}
 					            </router-link>
 					          </td>
 					          <td class="text-xs-right">{{ props.item.pickup_at }}</td>
-					          <td class="text-xs-right">{{ props.item.pickup_location_id }}</td>
+					          <td class="text-xs-right">{{ props.item.pickup_location }}</td>
 					          <td class="text-xs-right">{{ props.item.dropoff_at }}</td>
-					          <td class="text-xs-right">{{ props.item.dropoff_location_id }}</td>
+					          <td class="text-xs-right">{{ props.item.dropoff_location }}</td>
 					          <td class="text-xs-right">{{ getResourceName(props.item.drivers) }}</td>
 					          <td class="text-xs-right">{{ getResourceName(props.item.guides) }}</td>
 					          <td class="text-xs-right">{{ getResourceName(props.item.vehicles) }}</td>
@@ -45,12 +40,11 @@ export default {
             sortable: true,
             value: 'id'
           },
-          { text: 'Order Name', align: 'left', value: 'name' },
           { text: 'Client', value: 'name' },
           { text: 'Pick Up', value: 'pickup_at' },
-          { text: 'Pick Up Location', value: 'pickup_location_id' },
+          { text: 'Pick Up Location', value: 'pickup_location' },
           { text: 'Drop Off', value: 'dropoff_at' },
-          { text: 'Drop Off Location', value: 'dropoff_location_id' },
+          { text: 'Drop Off Location', value: 'dropoff_location' },
           { text: 'Drivers', value: 'drivers' },
           { text: 'Guides', value: 'guides' },
           { text: 'Vehicles', value: 'vehicles' },

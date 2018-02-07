@@ -2,17 +2,60 @@
 <v-container>
   <v-layout row justify-center>
     <v-flex xs12 sm10 md8>
-      <v-card>
-        <v-card-text>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Legal first name" required></v-text-field>
+       <v-form v-model="valid" ref="form" lazy-validation>
+          <v-card>
+            <v-card-text>
              
-            <v-text-field label="Legal middle name" hint="example of helper text only on focus"></v-text-field>
-            
-            <v-btn>Submit</v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
+                <v-text-field
+                  label="First Name"
+                  v-model="firstName"
+                  :rules="nameRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Last Name"
+                  v-model="lastName"
+                  :rules="nameRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Email"
+                  v-model="email"
+                  :rules="emailRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Phone"
+                  v-model="phone"
+                  :rules="phoneRules"
+                  required
+                ></v-text-field>
+              
+            </v-card-text>
+            <v-card-actions>
+              <v-btn large color="primary"
+                  @click="submit"
+                  :disabled="!valid"
+                >
+                  submit
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn large @click="clear">clear</v-btn>
+            </v-card-actions>
+
+          </v-card>
+
+      </v-form>
+      <v-snackbar
+                  :timeout="toast.timeout"
+                  :color="toast.color"
+                  absolute
+                  top
+                  v-model="snackbar"
+                >
+                  {{ toast.text }}
+                  <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+        </v-snackbar>
     </v-flex>
   </v-layout>
 </v-container>
@@ -22,10 +65,55 @@
  export default {
   name: "form-new-guide",
 
-  data() {
-    return {
-      valid: false,
+  data: () => ({
+      valid: true,
+      firstName: '',
+      nameRules: [
+        (v) => !!v || 'Name is required',
+        (v) => v && v.length <= 10 || 'Name must be less than 10 characters'
+      ],
+      lastName: '',
+      email: '',
+      emailRules: [
+          (v) => !!v || 'E-mail is required',
+          (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+      ],
+      phone: '',
+      phoneRules: [
+          (v) => !!v || 'Phone is required'
+      ],
+      snackbar: false,
+      toast: {
+        timeout: 2000,
+        color: 'success',
+        text: 'New Guide Added.'
+      },
+    }),
+
+    methods: {
+      
+      submit () {
+        if (this.$refs.form.validate()) {
+          // Native form submission is not yet supported
+          axios.post('/guides/new', {
+            first_name: this.firstName,
+            last_name: this.lastName,
+            email: this.email,
+            phone: this.phone,
+            // email: this.email,
+            // select: this.select,
+            // checkbox: this.checkbox
+          }).then(response => {
+            this.snackbar = true;
+            this.$eventHub.$emit('guideAdded') 
+            this.clear();
+          })
+
+        }
+      },
+      clear () {
+        this.$refs.form.reset()
+      }
     }
-  },
  }
 </script>

@@ -58,16 +58,20 @@ class OrdersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-
-        $client = Client::find($request->client);
+    { 
+        
+        $client = Client::find($request->client['id']);
         $order = $client->orders()->create([
-            'name'=> $client->company,
-            'vehicle_type' => $request->vehicle_type,
-            'pickup_at' => Carbon::createFromFormat('Y-m-d g:ia', $request->pickup_at),
-            'dropoff_at' => Carbon::createFromFormat('Y-m-d g:ia', $request->dropoff_at),
-            'pickup_location_id' => $request->pickup_city,
-            'dropoff_location_id' => $request->dropoff_city,
+            'type'=> $request->orderType['id'],
+            'pax' => $request->pax,
+            'group_type' => $request->groupType,
+            'pickup_at' => Carbon::createFromFormat('Y-m-d H:i:s', $request->pickupDate . ' ' . $request->pickupTime),
+            'dropoff_at' => Carbon::createFromFormat('Y-m-d H:i:s', $request->dropoffDate . ' ' . $request->dropoffTime),
+            'pickup_location' => $request->pickupLocation,
+            'dropoff_location' => $request->dropoffLocation,
+            'vehicle_option' => json_encode($request->vehicles),
+            'itinerary'  => $request->itinerary,
+            
             ]);
         //
     }

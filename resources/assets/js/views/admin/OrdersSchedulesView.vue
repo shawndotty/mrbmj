@@ -47,7 +47,7 @@
 					</thead>
 					<tbody>
 						<tr v-for="item in getTdItems">
-							<td class="text-xs-center">{{ item.name.slice(-4) }}</td>
+							<td class="text-xs-center">{{ item.id }}</td>
 							<td v-for="(day, index) in item.daysMap" :colspan="day.span" :class="day.class" title="test"> 
 								<!-- <div v-if="day.info" class="order-info">
 									some thing to say here

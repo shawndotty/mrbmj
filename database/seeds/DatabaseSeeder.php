@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
-    	factory(App\Client::class, 40)->create();
+    	factory(App\User::class)->create();
+        factory(App\Client::class, 40)->create();
         factory(App\Driver::class, 20)->create();
         factory(App\Guide::class, 20)->create();
         factory(App\Vehicle::class, 30)->create();

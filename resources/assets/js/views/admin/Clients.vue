@@ -23,12 +23,13 @@
                 class="elevation-1"
               >
               <template slot="items" slot-scope="props">
-                <td>{{ props.item.id }}</td>
+                <td><router-link :to="{ name: 'client', params: { clientId: props.item.id }}">{{ props.item.id }}</router-link></td>
                 <td class="text-xs-left">
-                  <router-link :to="{ name: 'client', params: { clientId: props.item.id }}">
-                    {{ props.item.first_name + ' ' + props.item.last_name }}
-                  </router-link>
+                  
+                    {{ props.item.first_name }}
+                  
                 </td>
+                <td class="text-xs-left"> {{props.item.last_name }}</td>
                 <td class="text-xs-left">{{ props.item.phone }}</td>
                 <td class="text-xs-left">{{ props.item.email }}</td>
                 <td class="text-xs-left">{{ props.item.company }}</td>
@@ -65,7 +66,8 @@ export default {
             sortable: true,
             value: 'id'
           },
-          { text: 'Full Name', align: 'left', value: 'full_name' },
+          { text: 'First Name', align: 'left', value: 'first_name' },
+          { text: 'Last Name', align: 'left', value: 'last_name' },
           { text: 'Phone', align: 'left', value: 'phone' },
           { text: 'Email', align: 'left', value: 'email' },
           { text: 'Company', align: 'left', value: 'company' },
@@ -79,11 +81,18 @@ export default {
 		},
 
 		created() {
-			axios.get('/clients')
-			.then(response => this.items = response.data );
+      this.getClients();
+      this.$eventHub.$on('clientAdded', () => {
+        console.log('addddd');
+        this.getClients();
+      })
 		},
 
     methods: {
+      getClients(){
+        axios.get('/clients')
+        .then(response => this.items = response.data );
+      },
       getResourceName(resources){
 
         if (resources.length != 0) {

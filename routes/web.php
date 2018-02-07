@@ -12,13 +12,9 @@
 */
 
 Route::get('/', function(){
-	return redirect('/admin'); 
+	return redirect('/login'); 
 });
 
-
-Route::get('/test', function(){
-	return "Hello World";
-});
 
 Route::get('/admin', 'AdminController@index');
 
@@ -27,6 +23,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/drivers', 'DriversController@index');
+Route::post('/drivers/new', 'DriversController@store');
 Route::get('/drivers/range-schedules', 'DriversController@indexWtihSchedules');
 Route::get('/driver/{driver}', function(App\Driver $driver){
 	return $driver;
@@ -36,6 +33,7 @@ Route::get('/driverschedules/{ds}', function(App\DriverSchedule $ds){
 });
 
 Route::get('/guides', 'GuidesController@index');
+Route::post('/guides/new', 'GuidesController@store');
 Route::get('/guides/range-schedules', 'GuidesController@indexWtihSchedules');
 Route::get('/guide/{guide}', function(App\Guide $guide){
 	return $guide;

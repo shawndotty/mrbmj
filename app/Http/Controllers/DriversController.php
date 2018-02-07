@@ -71,6 +71,14 @@ class DriversController extends Controller
     public function store(Request $request)
     {
         //
+        $driver = new Driver();
+        $driver->first_name = $request->first_name;
+        $driver->last_name = $request->last_name;
+        $driver->email = $request->email;
+        $driver->phone = $request->phone;
+        $driver->save();
+        //
+        return $driver;
     }
 
     /**

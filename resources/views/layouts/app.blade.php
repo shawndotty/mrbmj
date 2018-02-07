@@ -16,8 +16,21 @@
 <body>
     <div id="app">
         <v-app>
-                @yield('content')
-            </v-app>
+            <v-toolbar color="white">
+                <v-toolbar-title>MRBMJ Admin</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-toolbar-side-icon class="hidden-md-and-up"></v-toolbar-side-icon>
+                <v-toolbar-items class="hidden-sm-and-down">
+                    @if (Route::currentRouteName() == 'login')
+                      <v-btn flat href="{{ route('register') }}">Register</v-btn>
+                    @endif
+                    @if (Route::currentRouteName() == 'register')
+                      <v-btn flat href="{{ route('login') }}"><v-link>Login</v-link></v-btn>
+                    @endif
+                </v-toolbar-items>
+            </v-toolbar>
+            @yield('content')
+        </v-app>
     </div>
     <!-- Scripts -->
      <script src="{{ asset('js/app.js') }}"></script>

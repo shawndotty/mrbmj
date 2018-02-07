@@ -2,50 +2,69 @@
 <v-container>
   <v-layout row justify-center>
     <v-flex xs12 sm10 md8>
-      <v-card>
-        <v-card-text>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field
-              label="First Name"
-              v-model="firstName"
-              :rules="nameRules"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="Last Name"
-              v-model="lastName"
-              :rules="nameRules"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="Email"
-              v-model="email"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="Phone"
-              v-model="phone"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="Company"
-              v-model="company"
-            ></v-text-field>
-            <v-text-field
-              label="Address"
-              v-model="address"
-            ></v-text-field>
+       <v-form v-model="valid" ref="form" lazy-validation>
+          <v-card>
+            <v-card-text>
+             
+                <v-text-field
+                  label="First Name"
+                  v-model="firstName"
+                  :rules="nameRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Last Name"
+                  v-model="lastName"
+                  :rules="nameRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Email"
+                  v-model="email"
+                  :rules="emailRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Phone"
+                  v-model="phone"
+                  :rules="phoneRules"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="Company"
+                  v-model="company"
+                ></v-text-field>
+                <v-text-field
+                  label="Address"
+                  v-model="address"
+                ></v-text-field>
 
-            <v-btn
-              @click="submit"
-              :disabled="!valid"
-            >
-              submit
-            </v-btn>
-            <v-btn @click="clear">clear</v-btn>
-          </v-form>
-        </v-card-text>
-      </v-card>
+                
+              
+            </v-card-text>
+            <v-card-actions>
+              <v-btn large color="primary"
+                  @click="submit"
+                  :disabled="!valid"
+                >
+                  submit
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn large @click="clear">clear</v-btn>
+            </v-card-actions>
+
+          </v-card>
+      </v-form>
+      <v-snackbar
+                  :timeout="toast.timeout"
+                  :color="toast.color"
+                  absolute
+                  top
+                  v-model="snackbar"
+                >
+                  {{ toast.text }}
+                  <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+                </v-snackbar>
     </v-flex>
   </v-layout>
 </v-container>
@@ -64,9 +83,22 @@ export default {
       ],
       lastName: '',
       email: '',
+      emailRules: [
+          (v) => !!v || 'E-mail is required',
+          (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+      ],
       phone: '',
+      phoneRules: [
+          (v) => !!v || 'Phone is required'
+      ],
       company: '',
       address:'',
+      snackbar: false,
+      toast: {
+        timeout: 2000,
+        color: 'success',
+        text: 'New Client Added.'
+      },
     }),
    
     methods: {
@@ -84,9 +116,14 @@ export default {
             // email: this.email,
             // select: this.select,
             // checkbox: this.checkbox
-          })
+          }).then(response => {
+            this.snackbar = true;
+            this.$eventHub.$emit('clientAdded');
+            this.clear();
+          } )
 
-          this.clear();
+          
+
         }
       },
       clear () {
