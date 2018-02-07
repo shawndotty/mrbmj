@@ -18,7 +18,7 @@
                             type="text"
                             placeholder=""
                             value="{{ old('name') }}"
-                            name="email"
+                            name="name"
                             required
                            
                             ref="name"
@@ -68,7 +68,7 @@
 
                         </v-card-text> 
                         <v-card-actions>
-                          
+
                             <v-btn 
                                 color="primary"
                                 type="submit"
