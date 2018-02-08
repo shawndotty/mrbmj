@@ -20,9 +20,7 @@
     <v-dialog v-model="newItemDialog" fullscreen transition="dialog-bottom-transition" :overlay=false>
       <v-card>
         <dialog-toolbar title="Add New Driver" v-on:closeDialog="toggleNewItem"></dialog-toolbar> 
-        <form-new-item-schedule
-
-      ></form-new-item-schedule> 
+     		<form-new-driver></form-new-driver> 
       </v-card>
     </v-dialog>
     <v-dialog v-model="newItemScheduleDialog" fullscreen transition="dialog-bottom-transition" :overlay=false>
