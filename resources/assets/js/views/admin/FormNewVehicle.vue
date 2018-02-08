@@ -43,9 +43,13 @@
 </template>
 
 <script>
+import VehicleTypes from "../../mixins/vehicle-types.js"
+
  export default {
   name: "form-new-vehicle",
-
+  mixins: [
+    VehicleTypes
+  ],
   data() {
     return {
       vehicleCode: '',
@@ -57,36 +61,6 @@
         color: 'success',
         text: 'Vehicle Created'
       },
-
-      vehicleTypes: [
-        {
-          name: 'Coach Bus',
-          id: 1
-        },
-        {
-          name: 'Mid Bus',
-          id: 2
-        },
-        {
-          name: 'Mini Bus',
-          id: 3
-        },
-
-        {
-          name: 'Mini Van',
-          id: 4
-        },
-        {
-          name: 'Full Size Sub',
-          id: 5
-        },
-
-        {
-          name: 'Limo',
-          id: 6
-        }
-
-        ],
     }
   },
   methods: {

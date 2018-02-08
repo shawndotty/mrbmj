@@ -64,7 +64,7 @@
 					
 				<table class="my-table" >
 					<thead>
-						<tr><th width="80px">{{ itemType }}</th><th v-for="item in headerDays">{{ item.date}} {{ item.dow }}</th></tr>
+						<tr><th width="80px">{{ itemType }}</th><th v-for="item in getHeaderDays">{{ item.date}} {{ item.dow }}</th></tr>
 					</thead>
 					<tbody>
 						<template v-if="scheduleView == 'collapse'">
@@ -111,18 +111,20 @@
 </template>
 <script>
 import moment from "moment";
+import ScheduleView from "../../mixins/schedule-view.js"
 import utils from "../../utils.js";
 
 	export default {
 		name: 'items-schedules-view',
+		mixins: [
+			ScheduleView
+		],
 		data() {
 			return {
 				dialog: false,
 				scheduleView: 'collapse',
 				items: [],
 				monthPickMenu: false,
-        checkDate : moment().format("YYYY-MM"),
-        headers: [],
         show: false,
         scheduleType: [],
         scheduleDetail: null
@@ -160,19 +162,6 @@ import utils from "../../utils.js";
 				return this.itemType.toLowerCase() + "Added";
 			},
 
-			startOfM() {
-        return moment(this.checkDate).startOf('month');
-	    },
-
-	    endOfM(){
-        return moment(this.checkDate).endOf('month');          
-	    },
-	    daysInM(){
-	    	return moment(this.checkDate).daysInMonth();
-	    },
-	    headerDays(){
-					return utils.getMonthDays(this.checkDate);
-	    },
 	    getTdItems(){
 		  	let daysInM = this.daysInM;
 		  	let startOfM = this.startOfM

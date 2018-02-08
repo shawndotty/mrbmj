@@ -48,10 +48,8 @@
 					<tbody>
 						<tr v-for="item in getTdItems">
 							<td class="text-xs-center">{{ item.id }}</td>
-							<td v-for="(day, index) in item.daysMap" :colspan="day.span" :class="day.class" title="test"> 
-								<!-- <div v-if="day.info" class="order-info">
-									some thing to say here
-								</div> -->
+							<td v-for="(day, index) in item.daysMap" :colspan="day.span" :class="day.class" title="item"> 
+								<router-link v-if="day.info" :to="{ name: 'order', params: { orderId: item.id }}"></router-link>
 							</td>
 						</tr>	
 					</tbody>
@@ -68,45 +66,22 @@
 </template>
 <script>
 import moment from "moment";
+import ScheduleView from "../../mixins/schedule-view.js"
 export default {
 	name: "orders-schedules-view",
+	mixins: [
+		ScheduleView
+	],
 	data(){
 		return {
 			monthPickMenu: false,
-      checkDate : moment().format("YYYY-MM"),
 			chooseDate: '',
-      headers: [],
       show: false,
       noOrders: false,
       orders:[]
 		}
 	},
 	computed: {
-
-    startOfM() {
-        return moment(this.checkDate).startOf('month');
-    },
-
-    endOfM(){
-        return moment(this.checkDate).endOf('month');          
-    },
-
-		getHeaderDays(){
-			let y = moment(this.checkDate).year();
-			let m = moment(this.checkDate).month();
-			let daysInM = moment(this.checkDate).daysInMonth();
-			let days = [];
-			for (var i = 1; i <= daysInM; i++) {
-					days.push({
-						dow: moment({year: y, month: m, date: i}).format('ddd'),
-						date: i
-					});
-			}
-
-			this.headers = days;
-			return this.headers;
-	  },
-
 	  getTdItems(){
 	  	let daysInM = moment(this.checkDate).daysInMonth();
 	  	let startOfM = moment(this.checkDate).startOf('month');
@@ -135,8 +110,9 @@ export default {
 						tdItems.push({
 							day: i,
 							span: daysMap.span,
-							class: "order",
-							info: true, 
+							class: "order-type-" + item.type,
+							info: true,
+							id: item.id
 						});
 					} else if ( i != daysMap.start && daysMap.days.includes(i)) {
 						
@@ -232,6 +208,7 @@ export default {
         a {
             position:absolute;
             display: block;
+            width: 100%;
             height: 100%;
             left: 0;
             top: 0;
@@ -246,8 +223,12 @@ export default {
 		background-color: #2196F3;
 	}
 
-	tr td.order{
+	tr td.order-type-1{
 		background-color: orange;        
+	}
+
+	tr td.order-type-2{
+		background-color: red;        
 	}
 
 

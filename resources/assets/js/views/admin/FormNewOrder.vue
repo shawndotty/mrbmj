@@ -189,8 +189,8 @@
                     <v-select
                       v-bind:items="vehicleTypes"
                       v-model="formData.vehicles[index]"
-                      item-text="typeIntro"
-                      item-value="typeId"
+                      item-text="name"
+                      item-value="id"
                       :label="'Vehicle' + (index + 1)"
                       return-object
                       :autocomplete="true"
@@ -233,7 +233,7 @@
               @click="submit"
               :disabled="!valid"
             >
-                  submit
+            submit
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn large @click="clear">clear</v-btn>
@@ -242,17 +242,16 @@
 
          
       </v-form>
-          <v-snackbar
-                  :timeout="toast.timeout"
-                  :color="toast.color"
-                  absolute
-                  top
-                  v-model="snackbar"
-                >
-                  {{ toast.text }}
-                  <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
-                </v-snackbar>
-        
+      <v-snackbar
+              :timeout="toast.timeout"
+              :color="toast.color"
+              absolute
+              top
+              v-model="snackbar"
+            >
+              {{ toast.text }}
+              <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
+      </v-snackbar>
     </v-flex>
   </v-layout>
 </v-container>      
@@ -263,11 +262,12 @@
   import { required, maxLength, email } from 'vuelidate/lib/validators'
   import moment from "moment"
   import PlaceInput from "./partials/PlaceInput.vue"
+  import vehicleTypes from "../../mixins/vehicle-types.js"
  
 
  export default {
   name: "form-new-order",
-  mixins: [validationMixin],
+  mixins: [validationMixin, vehicleTypes],
   validations: {
     formData:{
         client: {
@@ -347,29 +347,6 @@
         {
           name: "Order",
           id: 2,
-        }
-      ],
-      vehicleTypes: [
-        {
-          typeIntro: 'Minivan - Seated Up To 8',
-          typeId: 1
-        },
-        {
-          typeIntro: 'Van - Seated Up To 12',
-          typeId: 2
-        },
-        {
-          typeIntro: 'Sprinter - Seated Up To 14',
-          typeId: 3
-        },
-
-        {
-          typeIntro: 'Minibus - Seated Up To 36',
-          typeId: 4
-        },
-        {
-          typeIntro: 'Motorcoach - Seated Up To 61',
-          typeId: 5
         }
       ],
       groupTypes: [

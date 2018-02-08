@@ -37,7 +37,17 @@ class VehicleSchedulesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // remember to validate
+        $vs = new VehicleSchedule();
+
+        $vs->vehicle_id = $request->item['id'];
+        $vs->start_at = Carbon::createFromFormat('Y-m-d H:i:s', $request->startDate . ' ' . $request->startTime);
+        $vs->end_at = Carbon::createFromFormat('Y-m-d H:i:s', $request->endDate . ' ' . $request->endTime);
+        $vs->type = $request->scheduleType['id'];
+        $vs->note = $request->note;
+
+        $vs->save();
+
     }
 
     /**

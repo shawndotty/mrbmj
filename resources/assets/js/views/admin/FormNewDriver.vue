@@ -25,8 +25,10 @@
                   required
                 ></v-text-field>
                 <v-text-field
-                  label="Phone"
+                  label="US Phone"
+                  mask="phone"
                   v-model="phone"
+                  hint="Only numbers"
                   :rules="phoneRules"
                   required
                 ></v-text-field>
@@ -61,26 +63,18 @@
 </template>
 
 <script>
+  import VRules from "../../mixins/validate-rules.js"
  export default {
   name: "form-new-driver",
-
+  mixins: [
+    VRules
+  ],
   data: () => ({
       valid: true,
       firstName: '',
-      nameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => v && v.length <= 10 || 'Name must be less than 10 characters'
-      ],
       lastName: '',
       email: '',
-      emailRules: [
-          (v) => !!v || 'E-mail is required',
-          (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
-      ],
       phone: '',
-      phoneRules: [
-          (v) => !!v || 'Phone is required'
-      ],
       snackbar: false,
       toast: {
         timeout: 2000,

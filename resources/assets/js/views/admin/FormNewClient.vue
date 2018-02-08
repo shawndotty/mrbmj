@@ -64,7 +64,7 @@
                 >
                   {{ toast.text }}
                   <v-btn dark flat @click.native="snackbar = false">Close</v-btn>
-                </v-snackbar>
+        </v-snackbar>
     </v-flex>
   </v-layout>
 </v-container>
@@ -72,25 +72,18 @@
 </template>
 
 <script>
+import VRules from "../../mixins/validate-rules.js"
 export default {
   name: "form-new-client",
+  mixins : [
+    VRules
+  ],
     data: () => ({
       valid: true,
       firstName: '',
-      nameRules: [
-        (v) => !!v || 'Name is required',
-        (v) => v && v.length <= 10 || 'Name must be less than 10 characters'
-      ],
       lastName: '',
       email: '',
-      emailRules: [
-          (v) => !!v || 'E-mail is required',
-          (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
-      ],
       phone: '',
-      phoneRules: [
-          (v) => !!v || 'Phone is required'
-      ],
       company: '',
       address:'',
       snackbar: false,

@@ -20,6 +20,7 @@ class CreateVehicleSchedulesTable extends Migration
             $table->integer('vehicle_id');
             $table->integer('type');
             $table->integer('order_id')->nullable()->default(NULL);
+            $table->longtext('note')->nullable()->default(NULL);
             $table->json('option')->nullable()->default(NULL);
             $table->timestamps();
         });

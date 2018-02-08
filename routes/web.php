@@ -32,6 +32,8 @@ Route::get('/driverschedules/{ds}', function(App\DriverSchedule $ds){
 	return $ds;
 });
 
+Route::post('/driverschedules/new', 'DriverSchedulesController@store');
+
 Route::get('/guides', 'GuidesController@index');
 Route::post('/guides/new', 'GuidesController@store');
 Route::get('/guides/range-schedules', 'GuidesController@indexWtihSchedules');
@@ -41,6 +43,7 @@ Route::get('/guide/{guide}', function(App\Guide $guide){
 Route::get('/guideschedules/{gs}', function(App\GuideSchedule $gs){
 	return $gs;
 });
+Route::post('/guideschedules/new', 'GuideSchedulesController@store');
 
 Route::get('/orders', 'OrdersController@index');
 Route::get('/orders/in-range', 'OrdersController@indexWithRange');
@@ -65,6 +68,7 @@ Route::get('/vehicel/{vehicle}', function(App\Vehicle $vehicle){
 Route::get('/vehicleschedules/{vs}', function(App\VehicleSchedule $vs){
 	return $vs;
 });
+Route::post('/vehicleschedules/new', 'VehicleSchedulesController@store');
 Route::get('/vehicles/range-schedules', 'VehiclesController@indexWtihSchedules');
 Route::get('/vehicles/with-order-schedules', 'VehiclesController@indexWithOrderSchedules');
 Route::get('/vehicles/schedules', 'VehicleSchedulesController@checkAvailableSchedules');

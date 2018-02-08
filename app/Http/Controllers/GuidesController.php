@@ -14,7 +14,6 @@ class GuidesController extends Controller
      */
     public function index()
     {
-        //
         return Guide::all();
     }
     public function indexWtihSchedules(Request $request){

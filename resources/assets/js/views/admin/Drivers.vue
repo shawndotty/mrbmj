@@ -6,7 +6,8 @@
   			<v-toolbar>
 			    <v-toolbar-title>All Drivers</v-toolbar-title>
 			    <v-spacer></v-spacer>
-			    <v-btn color="primary" dark @click.native.stop="dialog = true">Add New Driver</v-btn>
+			    <v-btn color="secondary" dark @click.native.stop="toggleNewItem">Add New Driver</v-btn>
+			    <v-btn color="primary" dark @click.native.stop="toggleNewItemSchedule">Add Driver Schedule</v-btn>
 			  </v-toolbar>
 				<items-schedules-view
 					:itemType="itemType"
@@ -16,12 +17,22 @@
 
   		</v-card>
   	</v-flex>
-    <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition" :overlay=false>
+    <v-dialog v-model="newItemDialog" fullscreen transition="dialog-bottom-transition" :overlay=false>
       <v-card>
-        <dialog-toolbar title="Add New Driver" v-on:closeDialog="dialog = false"></dialog-toolbar> 
-        <form-new-driver></form-new-driver>  
+        <dialog-toolbar title="Add New Driver" v-on:closeDialog="toggleNewItem"></dialog-toolbar> 
+        <form-new-item-schedule
+
+      ></form-new-item-schedule> 
       </v-card>
     </v-dialog>
+    <v-dialog v-model="newItemScheduleDialog" fullscreen transition="dialog-bottom-transition" :overlay=false>
+    <v-card>
+      <dialog-toolbar title="Add New Driver Schedule" v-on:closeDialog="toggleNewItemSchedule"></dialog-toolbar> 
+      <form-new-item-schedule
+      :itemType = "itemType"
+        :scheduleTypes="scheduleTypes"></form-new-item-schedule>  
+    </v-card>
+  </v-dialog>
   </v-layout>
 	
 </template>
@@ -31,39 +42,21 @@ import FormNewDriver from "./FormNewDriver.vue"
 import DialogToolbar from "./partials/DialogToolbar.vue"
 // import DriversSchedulesView from "./DriversSchedulesView.vue"
 import ItemsSchedulesView from './ItemsSchedulesView.vue'
+import FormNewItemSchedule from "./FormNewItemSchedule.vue"
+import ItemDialog from "../../mixins/item-dialog.js"
+import {driverScheduleType} from "../../mixins/schedule-types.js"
 export default {
 		components: {
-			FormNewDriver, DialogToolbar, ItemsSchedulesView
+			FormNewDriver, DialogToolbar, ItemsSchedulesView, FormNewItemSchedule
 		},
+		mixins: [
+			driverScheduleType, ItemDialog
+		],
 		data() {
 			return {
-				dialog: false,
 				itemType: 'driver',
-				scheduleTypes: [
-					{ 
-	        	name : "Order",
-	        	color: "red",
-	        	id: 1,
-	        },
-	        { 
-	        	name : "Leave",
-	        	color: "yellow",
-	        	id: 2,
-	        },
-	        { 
-	        	name : "Vocation",
-	        	color: "green",
-	        	id: 3,
-	        },
-	        { 
-	        	name : "Other",
-	        	color: "purple",
-	        	id: 4,
-	        },
-				]
 			}
 		},
-
 		created() {
 			axios.get('/drivers')
 			.then(response => this.drivers = response.data );
