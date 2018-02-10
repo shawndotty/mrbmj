@@ -14,6 +14,13 @@ class Order extends Model
         'pickup_at',
         'dropoff_at'
     ];
+    protected $casts = [
+        'vehicle_option' => 'array',
+        'driver_option' => 'array',
+        'guide_option' => 'array',
+        'lodging_option' => 'array',
+        'food_option' => 'array',
+    ];
 		
     /**
      * Get the client that owns the order.

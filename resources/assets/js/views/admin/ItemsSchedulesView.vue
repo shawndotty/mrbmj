@@ -96,10 +96,31 @@
 				<v-dialog v-model="dialog" persistent max-width="600">
 		      
 		      <v-card>
-		        <v-card-title class="headline">Check Schedule</v-card-title>
-		        <v-card-text>{{ scheduleDetail }}</v-card-text>
+
+		        <v-card-title class=""><strong>Schedule Details</strong></v-card-title>
+		        <v-divider></v-divider>
+		        <v-card-text>
+
+						<table class="small-table" width="100%">
+							<tr>
+								<th class="text-xs-left">Start At:</th>
+								<td class="text-xs-right">{{ scheduleStart }}</td>
+							</tr>
+							<tr>
+								<th class="text-xs-left">End At:</th>
+								<td class="text-xs-right">{{ scheduleEnd}}</td>
+							</tr>
+							<tr v-if="scheduleOrderId">
+								<th class="text-xs-left">For Order:</th>
+								<td class="text-xs-right"><router-link :to="{ name: 'order', params: { orderId: scheduleOrderId }}">{{ scheduleOrderId }}</router-link></td>
+							</tr>
+						
+						</table>
+		      
+
+		      	</v-card-text>
 		        <v-card-actions>
-		        	<v-btn color="green darken-1" flat >More</v-btn>
+		        	
 		          <v-spacer></v-spacer>
 		          <v-btn color="green darken-1" flat @click.native="dialog = false">Close</v-btn>
 		        </v-card-actions>
@@ -127,7 +148,10 @@ import utils from "../../utils.js";
 				monthPickMenu: false,
         show: false,
         scheduleType: [],
-        scheduleDetail: null
+        scheduleDetail: null,
+        scheduleStart: null,
+        scheduleEnd: null,
+        scheduleOrderId: null,
 			}
 		},
 		props: {
@@ -282,7 +306,10 @@ import utils from "../../utils.js";
     		let urlBase = this.itemType.toLowerCase() ;
         axios.get('/' + urlBase + 'schedules/' + id)
         .then(response => { 
-            this.scheduleDetail = response.data
+            this.scheduleDetail = response.data;
+            this.scheduleStart = response.data.start_at;
+            this.scheduleEnd = response.data.end_at;
+            this.scheduleOrderId = response.data.order_id ? response.data.order_id : 0;
         }); 
     		
     	}
@@ -291,7 +318,15 @@ import utils from "../../utils.js";
 </script>
 
 <style lang="scss">
+.small-table{
+	width: 100%;
+	th, td{
+		padding: 8px;
+		border-bottom: 1px solid #dddddd;
+	}
+}
 .my-table{
+	width: 100%;
 	border-spacing: 0;
 	.expand-view {
 		td {
@@ -318,6 +353,7 @@ import utils from "../../utils.js";
             height: 100%;
             left: 0;
             top: 0;
+            line-height: 100%;
         }
 	}
 

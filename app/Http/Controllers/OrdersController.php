@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use App\Order;
 use App\Client;
 use Carbon\Carbon;
+use App\Vehicle;
+use DB;
 use Illuminate\Http\Request;
+use App\VehicleSchedule;
+use App\DriverSchedule;
+use App\GuideSchedule;
 
 class OrdersController extends Controller
 {
@@ -59,8 +64,29 @@ class OrdersController extends Controller
      */
     public function store(Request $request)
     { 
-        
         $client = Client::find($request->client['id']);
+        $vehicleRequest = collect($request->vehicles);
+        $vehicleOption = [
+            'total' => $request->vehiclesNeeded,
+            'needs' => collect([])
+        ];
+        $vehicleOptionGrouped = $vehicleRequest->groupBy('id');
+        foreach ($vehicleOptionGrouped as $key => $vehicles) {
+           $vehicleOption['needs']->push(
+                [
+                    'type'=>$key,
+                    'name'=>collect($vehicles)->first()['name'],
+                    'num' =>collect($vehicles)->count()
+                ]
+           );  
+        }
+
+        if ($request->needGuides) {
+            $guideOption = [
+                'total' => $request->guidesNeeded,
+            ];
+        }
+
         $order = $client->orders()->create([
             'type'=> $request->orderType['id'],
             'pax' => $request->pax,
@@ -69,7 +95,8 @@ class OrdersController extends Controller
             'dropoff_at' => Carbon::createFromFormat('Y-m-d H:i:s', $request->dropoffDate . ' ' . $request->dropoffTime),
             'pickup_location' => $request->pickupLocation,
             'dropoff_location' => $request->dropoffLocation,
-            'vehicle_option' => json_encode($request->vehicles),
+            'vehicle_option' => $vehicleOption,
+            'guide_option' => $guideOption,
             'itinerary'  => $request->itinerary,
             
             ]);
@@ -97,6 +124,87 @@ class OrdersController extends Controller
     public function edit(Order $order)
     {
         //
+    }
+
+    public function assignVehicle(Request $request){
+        $order = Order::find($request->orderId);
+        $order->vehicles()->attach($request->vehicleId);
+
+        $vs = new VehicleSchedule();
+        $vs->vehicle_id = $request->vehicleId;
+        $vs->start_at = Carbon::createFromFormat('Y-m-d H:i:s', $order->pickup_at );
+        $vs->end_at = Carbon::createFromFormat('Y-m-d H:i:s', $order->dropoff_at );
+        $vs->type = 1;
+        $vs->order_id = $request->orderId;
+        $vs->save();
+
+        return $vs;
+    }
+
+    public function removeVehicle(Request $request){
+        $order = Order::find($request->oId);
+        $order->vehicles()->detach($request->vId);
+
+        DB::table('vehicle_schedules')
+        ->where('order_id', $request->oId)
+        ->where('vehicle_id', $request->vId)
+        ->delete();
+        // $v = Vehicle::get($request->vId);
+        // $v->vehicleSchedules()->where('order_id', $request->oId)->delete();
+    }
+
+    public function assignDriver(Request $request){
+        $order = Order::find($request->oId);
+        $order->drivers()->attach($request->dId);
+
+        $ds = new DriverSchedule();
+        $ds->driver_id = $request->dId;
+        $ds->start_at = Carbon::createFromFormat('Y-m-d H:i:s', $order->pickup_at );
+        $ds->end_at = Carbon::createFromFormat('Y-m-d H:i:s', $order->dropoff_at );
+        $ds->type = 1;
+        $ds->order_id = $request->oId;
+        $ds->save();
+
+        return $ds;
+    }
+
+    public function removeDriver(Request $request){
+        $order = Order::find($request->oId);
+        $order->drivers()->detach($request->dId);
+
+        DB::table('driver_schedules')
+        ->where('order_id', $request->oId)
+        ->where('driver_id', $request->dId)
+        ->delete();
+        // $v = Vehicle::get($request->vId);
+        // $v->vehicleSchedules()->where('order_id', $request->oId)->delete();
+    }
+
+    public function assignGuide(Request $request){
+        $order = Order::find($request->oId);
+        $order->guides()->attach($request->dId);
+
+        $ds = new GuideSchedule();
+        $ds->guide_id = $request->dId;
+        $ds->start_at = Carbon::createFromFormat('Y-m-d H:i:s', $order->pickup_at );
+        $ds->end_at = Carbon::createFromFormat('Y-m-d H:i:s', $order->dropoff_at );
+        $ds->type = 1;
+        $ds->order_id = $request->oId;
+        $ds->save();
+
+        return $ds;
+    }
+
+    public function removeGuide(Request $request){
+        $order = Order::find($request->oId);
+        $order->guides()->detach($request->dId);
+
+        DB::table('guide_schedules')
+        ->where('order_id', $request->oId)
+        ->where('guide_id', $request->dId)
+        ->delete();
+        // $v = Vehicle::get($request->vId);
+        // $v->vehicleSchedules()->where('order_id', $request->oId)->delete();
     }
 
     /**

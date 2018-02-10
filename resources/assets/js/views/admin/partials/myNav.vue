@@ -28,6 +28,11 @@
       return {
         items: [
           {
+            icon: 'person',
+            title: 'Clients',
+            route:'/clients'
+          },
+          {
             icon: 'receipt',
             title: 'Orders',
             route:'/orders'
@@ -47,11 +52,7 @@
             title: 'Guides',
             route:'/guides'
           },
-          {
-            icon: 'person',
-            title: 'Clients',
-            route:'/clients'
-          },
+          
           ]
       }
     }

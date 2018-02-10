@@ -20,8 +20,6 @@
                       label="Client Name"
                       :autocomplete="true"
                       :error-messages="clientNameErrors"
-                      @change="$v.formData.client.$touch()"
-                      @blur="$v.formData.client.$touch()"
                       required
                       bottom
                     ></v-select>
@@ -36,8 +34,6 @@
                         label="Order Type"
                         :autocomplete="true"
                         :error-messages="orderTypeErrors"
-                        @change="$v.formData.orderType.$touch()"
-                        @blur="$v.formData.orderType.$touch()"
                         bottom
                         required
                       ></v-select>
@@ -160,7 +156,6 @@
                       <place-input required v-model="formData.dropoffLocation" label="Dropoff Location"></place-input>
                     </v-flex>
               </v-layout>
-             
               </v-container>
               </v-card-text>
             </v-card>
@@ -189,7 +184,7 @@
                     <v-select
                       v-bind:items="vehicleTypes"
                       v-model="formData.vehicles[index]"
-                      item-text="name"
+                      item-text="intro"
                       item-value="id"
                       :label="'Vehicle' + (index + 1)"
                       return-object
@@ -204,7 +199,35 @@
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
-          <v-expansion-panel-content :value="false">
+          <v-expansion-panel-content :value="true">
+            <div slot="header"><h1 class="title">Guides, Lodging and Food Services <v-chip color="blue" small text-color="white">Optional</v-chip></h1></div>
+             <v-card>
+              <v-card-text class="grey lighten-4">
+                <v-container grid-list-md>
+                  <v-layout row wrap class="mb-3">
+                    <v-flex xs12 sm6 md4>
+                        <v-checkbox label="Need Guides Services for Trip" v-model="formData.needGuides" light></v-checkbox>
+                        <v-text-field
+                          v-if="formData.needGuides == true"
+                          label="Number of Guides Needed"
+                          type="number"
+                          min="1"
+                          required
+                          v-model="formData.guidesNeeded"
+                        ></v-text-field>
+                    </v-flex>
+                    <v-flex xs12 sm6 md4>
+                        <v-checkbox label="Need Loding Services for Trip" v-model="formData.needLodging" light></v-checkbox>
+                    </v-flex>
+                    <v-flex xs12 sm6 md4>
+                        <v-checkbox label="Need Food Services for Trip" v-model="formData.needFood" light></v-checkbox>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </v-expansion-panel-content>
+          <v-expansion-panel-content :value="true">
             <div slot="header"><h1 class="title">Itinerary <v-chip color="blue" small text-color="white">Optional</v-chip></h1></div>
             <v-card>
               <v-card-text class="grey lighten-4">
@@ -246,7 +269,7 @@
               :timeout="toast.timeout"
               :color="toast.color"
               absolute
-              top
+              bottom 
               v-model="snackbar"
             >
               {{ toast.text }}
@@ -326,7 +349,9 @@
         dropoffLocation: null,
         vehicles: [{}],
         vehiclesNeeded: 1,
-        itinerary: ''
+        itinerary: '',
+        needGuides: false,
+        guidesNeeded: 1
       },
       valid: false,
       snackbar: false,

@@ -20,7 +20,7 @@
     <slot name="userControl"></slot>
   </v-toolbar>
   <v-content>
-    <v-container fluid>
+    <v-container fluid grid-list-xl>
       <v-slide-y-transition mode="out-in">
         
           <router-view>

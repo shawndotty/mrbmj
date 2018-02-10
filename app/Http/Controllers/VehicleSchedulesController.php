@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\VehicleSchedule;
 use Carbon\Carbon;
 use App\Vehicle;
+use App\Order;
+use DB;
 use Illuminate\Http\Request;
 
 class VehicleSchedulesController extends Controller
@@ -39,16 +41,14 @@ class VehicleSchedulesController extends Controller
     {
         // remember to validate
         $vs = new VehicleSchedule();
-
         $vs->vehicle_id = $request->item['id'];
         $vs->start_at = Carbon::createFromFormat('Y-m-d H:i:s', $request->startDate . ' ' . $request->startTime);
         $vs->end_at = Carbon::createFromFormat('Y-m-d H:i:s', $request->endDate . ' ' . $request->endTime);
         $vs->type = $request->scheduleType['id'];
         $vs->note = $request->note;
-
         $vs->save();
-
     }
+
 
     /**
      * Display the specified resource.
@@ -102,23 +102,32 @@ class VehicleSchedulesController extends Controller
             'totalAvailable' => null,
             'partAvailable' => [],
         ];
-
         $start = $request->start_at;
         $end = $request->end_at;
+        $orderID=$request->order_id;
+        $assignedV = DB::table('order_vehicle')->where('order_id', $orderID)->pluck('vehicle_id');
+     
         $startDate = Carbon::parse($start)->toDateString();
         $endDate = Carbon::parse($end)->toDateString();
         $vehicle_type = $request->vehicle_type;
 
 
-        $vacancyVehicles = Vehicle::doesntHave('vehicleSchedules')->where('vehicle_type', $vehicle_type)->get();
+        $vacancyVehicles = 
+            Vehicle::doesntHave('vehicleSchedules')
+            ->whereIn('vehicle_type', $vehicle_type)
+            ->get();
 
         $availables['totalAvailable'] = $vacancyVehicles;
 
        
 
-        $needToCheckVehicles = Vehicle::has('vehicleSchedules')->where('vehicle_type', $vehicle_type)->get();
+        $needToCheckVehicles = 
+            Vehicle::has('vehicleSchedules')
+            ->whereIn('vehicle_type', $vehicle_type)
+            ->whereNotIn('id', $assignedV)
+            ->get();
 
-        $needToCheckVehicles->load(['vehicleSchedules'=>function($query) use($start, $end){
+        $needToCheckVehicles->load(['vehicleSchedules'=>function($query) use($start, $end, $assignedV){
              return $query 
                           ->whereBetween('start_at', [$start, $end])
                           ->orWhereBetween('end_at', [$start, $end])

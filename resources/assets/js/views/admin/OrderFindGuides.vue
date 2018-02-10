@@ -5,21 +5,21 @@
 			<v-card>
 	      <table class="schedule-table">
 		  		<thead>
-		  			<tr><th width="80px">Vehicles</th><th v-for="item in headerDays">{{ item.format("M-D") }}</th><th>Action</th></tr>
+		  			<tr><th width="80px">Guides</th><th v-for="item in headerDays">{{ item.format("M-D") }}</th><th>Action</th></tr>
 		  		</thead>
 		  		<tbody>
 		  			<tr 
-		  				v-if="availableVehicles.totalAvailable"
-		  				v-for="vehicle in availableVehicles.totalAvailable">
-		  				<td class="text-xs-center">{{ vehicle.name.slice(-4) }}</td>
+		  				v-if="availableGuides.totalAvailable"
+		  				v-for="guide in availableGuides.totalAvailable">
+		  				<td class="text-xs-center">{{ guide.first_name.slice(-4) }}</td>
 		  				<td :colspan="diffDays + 1" class="available"></td>
-		  				<td with="80px" class="text-xs-center"><a v-on:click.prevent="addToOrder(vehicle.id)" small>Add</a></td>
+		  				<td with="80px" class="text-xs-center"><a v-on:click.prevent="addToOrder(guide.id)" small>Add</a></td>
   					</tr>
   					<tr 
-		  				v-if="availableVehicles.partAvailable"
-		  				v-for="vehicle in availableVehicles.partAvailable">
-		  				<td class="text-xs-center">{{ vehicle.name.slice(-4) }}</td>
-		  				<td v-for="date in vehicle.datesMap" :class="date.class"></td>
+		  				v-if="availableGuides.partAvailable"
+		  				v-for="guide in availableGuides.partAvailable">
+		  				<td class="text-xs-center">{{ guide.first_name.slice(-4) }}</td>
+		  				<td v-for="date in guide.datesMap" :class="date.class"></td>
 		  				<td with="80px" class="text-xs-center"></td>
   					</tr>
 		  		</tbody>
@@ -33,23 +33,18 @@
 	import moment from "moment";
 
 	export default {
-		name: "order-find-vehicles",
+		name: "order-find-guides",
 		data() {
 			return {
-				availableVehicles : [],
+				availableGuides : [],
 				daysInHeader : [],
 			}
 		},
 		props: [
-			'pickupAt', 'dropoffAt', 'vehicleOption', 'orderId'
+			'pickupAt', 'dropoffAt', 'orderId'
 		],
 		props: {
-			vehicleOption: {
-				type: Object,
-				default: ()=>{
-					return {}
-				}
-			},
+			
 			pickupAt: {
 				type: String,
 				default: ''
@@ -64,8 +59,8 @@
 			}
 		},
 		created(){
-			this.$eventHub.$on('checkVehicles', ()=>{
-				this.findVehicles();
+			this.$eventHub.$on('checkGuides', ()=>{
+				this.findGuides();
 			})
 		},
 		computed: {
@@ -77,38 +72,31 @@
 	    	return moment(this.dropoffAt).diff(moment(this.pickupAt), 'days')
 	    },
 
-	    vehicleTotal(){
-	    	return this.vehicleOption.total;	
-	    }
 		},
 		methods: {
-			addToOrder: function(vid){
+			addToOrder: function(did){
 				let data = {
-					orderId: this.orderId,
-					vehicleId: vid
+					oId: this.orderId,
+					dId: did
 				};
-				axios.post('/orders/assignvehicle', data).then(response => {
-					this.$eventHub.$emit('vehicelAddedtoOrder');
-					this.findVehicles();
+				axios.post('/orders/assignguide', data).then(response => {
+					this.$eventHub.$emit('guideAddedtoOrder');
+					this.findGuides();
           });
 			},
-			findVehicles: function(){
-				let types = this.vehicleOption.needs.map( function(element, index) {
-            	return element.type;
-        });
+			findGuides: function(){
         
-        axios.get('/vehicles/schedules', {
+        axios.get('/guides/schedules', {
           params: {
             start_at: this.pickupAt,
             end_at: this.dropoffAt,
-            vehicle_type: types,
             order_id: this.orderId,
           }
         })
         .then(response => { 
-        	this.availableVehicles = response.data 
-        	if (this.availableVehicles.partAvailable.length) {
-        			this.buildDatesMap(this.availableVehicles.partAvailable);
+        	this.availableGuides = response.data 
+        	if (this.availableGuides.partAvailable.length) {
+        			this.buildDatesMap(this.availableGuides.partAvailable);
         	}
         }); 
       },

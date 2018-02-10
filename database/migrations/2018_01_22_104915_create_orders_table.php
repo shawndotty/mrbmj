@@ -24,6 +24,10 @@ class CreateOrdersTable extends Migration
             $table->string('pickup_location');
             $table->string('dropoff_location');
             $table->json('vehicle_option')->nullable()->default(NULL);
+            $table->json('guide_option')->nullable()->default(NULL);
+            $table->json('driver_option')->nullable()->default(NULL);
+            $table->json('lodging_option')->nullable()->default(NULL);
+            $table->json('food_option')->nullable()->default(NULL);
             $table->longtext('itinerary')->nullable()->default(NULL);
             $table->timestamps();
         });

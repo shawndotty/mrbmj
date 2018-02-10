@@ -5,7 +5,7 @@
                 <v-card>
                   <v-card-text>
                     <v-form v-model="valid" ref="form" lazy-validation>
-                    <v-text-field label="Vehicle Code" v-model="vehicleCode" required></v-text-field>
+                    
                     <v-select
                         v-bind:items="vehicleTypes"
                         item-text="name"
@@ -15,15 +15,21 @@
                         label="Vehicle Type"
                         bottom
                         ></v-select>
-                    <v-btn
+                    
+                    <v-text-field label="Vehicle Code" v-model="vehicleCode" required></v-text-field>
+                    
+                     </v-form>
+                  </v-card-text>
+                  <v-card-actions class="pa-3">
+                    <v-btn color="primary"
                     @click="submit"
                     :disabled="!valid"
                     >
                     submit
                     </v-btn>
+                    <v-spacer></v-spacer>
                     <v-btn @click="clear">clear</v-btn>
-                     </v-form>
-                  </v-card-text>
+                  </v-card-actions>
                 </v-card>
                 <v-snackbar
                   :timeout="toast.timeout"

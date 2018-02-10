@@ -31,8 +31,10 @@ Route::get('/driver/{driver}', function(App\Driver $driver){
 Route::get('/driverschedules/{ds}', function(App\DriverSchedule $ds){
 	return $ds;
 });
-
+Route::get('/drivers/schedules', 'DriverSchedulesController@checkAvailableSchedules');
 Route::post('/driverschedules/new', 'DriverSchedulesController@store');
+
+
 
 Route::get('/guides', 'GuidesController@index');
 Route::post('/guides/new', 'GuidesController@store');
@@ -43,11 +45,18 @@ Route::get('/guide/{guide}', function(App\Guide $guide){
 Route::get('/guideschedules/{gs}', function(App\GuideSchedule $gs){
 	return $gs;
 });
+Route::get('/guides/schedules', 'GuideSchedulesController@checkAvailableSchedules');
 Route::post('/guideschedules/new', 'GuideSchedulesController@store');
 
 Route::get('/orders', 'OrdersController@index');
 Route::get('/orders/in-range', 'OrdersController@indexWithRange');
 Route::post('/orders/new', 'OrdersController@store');
+Route::post('/orders/assignvehicle', 'OrdersController@assignVehicle');
+Route::post('/orders/assigndriver', 'OrdersController@assignDriver');
+Route::post('/orders/assignguide', 'OrdersController@assignGuide');
+Route::post('/orders/removevehicle', 'OrdersController@removeVehicle');
+Route::post('/orders/removedriver', 'OrdersController@removeDriver');
+Route::post('/orders/removeguide', 'OrdersController@removeGuide');
 Route::get('/order/{order}', function(App\Order $order){
 	$order->load('vehicles','drivers','guides');
 	return $order;
